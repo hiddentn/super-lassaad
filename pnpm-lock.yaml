@@ -11,6 +11,9 @@ importers:
       kaboom:
         specifier: ^3000.1.17
         version: 3000.1.17
+      kaboom-flex-ui:
+        specifier: ^0.0.8
+        version: 0.0.8(kaboom@3000.1.17)
     devDependencies:
       '@types/node':
         specifier: ^25.0.3
@@ -977,6 +980,11 @@ packages:
   json5@1.0.2:
     resolution: {integrity: sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==}
     hasBin: true
+
+  kaboom-flex-ui@0.0.8:
+    resolution: {integrity: sha512-myvbyr3dQ1YBk1Km3mctgSH1W9c4irk8EcDYzS5jaaoT4idcEjMGwxcAuGAPjVIkT4vijjEtupbcMPnlLKbRLA==}
+    peerDependencies:
+      kaboom: ^3000.1.17
 
   kaboom@3000.1.17:
     resolution: {integrity: sha512-npAtjGxj9Oj9vLpXfURck9eUPHR2ac1Lhc1bNcZ0NWcs+Lgs40Ty+wjujv1C2DwjWvxaX+3r2G64M35BS/Ry2g==}
@@ -2373,6 +2381,10 @@ snapshots:
   json5@1.0.2:
     dependencies:
       minimist: 1.2.8
+
+  kaboom-flex-ui@0.0.8(kaboom@3000.1.17):
+    dependencies:
+      kaboom: 3000.1.17
 
   kaboom@3000.1.17: {}
 

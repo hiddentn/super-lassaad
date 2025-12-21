@@ -15,7 +15,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "kaboom": "^3000.1.17"
+    "kaboom": "^3000.1.17",
+    "kaboom-flex-ui": "^0.0.8"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
