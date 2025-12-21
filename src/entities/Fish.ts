@@ -1,5 +1,10 @@
+import type { GameObj, Vec2 } from "kaboom"
+
 export class Fish {
-  constructor(positions, amplitudes, type) {
+  amplitudes: number[]
+  fish: GameObj[]
+
+  constructor(positions: Vec2[], amplitudes: number[], type: number) {
     this.amplitudes = amplitudes
     this.fish = []
     for (const position of positions) {
@@ -32,7 +37,7 @@ export class Fish {
         fish.enterState("rotate", "fall")
       })
 
-      const rotate = fish.onStateEnter("rotate", (nextState) => {
+      const rotate = fish.onStateEnter("rotate", (nextState: string) => {
         fish.rotateBy(180)
         fish.enterState(nextState)
       })

@@ -1,26 +1,31 @@
+import type { GameObj } from "kaboom"
+
 export class Player {
   heightDelta = 0
-
   isMoving = false
-
   isRespawning = false
-
   lives = 3
-
   coins = 0
-
   hasJumpedOnce = false
-
   coyoteLapse = 0.1
+  isInTerminalScene: boolean
+  currentLevelScene: number
+  speed: number
+  jumpForce: number
+  previousHeight: number
+  initialX: number
+  initialY: number
+  timeSinceLastGrounded: number
+  gameObj: GameObj
 
   constructor(
-    posX,
-    posY,
-    speed,
-    jumpForce,
-    nbLives,
-    currentLevelScene,
-    isInTerminalScene
+    posX: number,
+    posY: number,
+    speed: number,
+    jumpForce: number,
+    nbLives: number,
+    currentLevelScene: number,
+    isInTerminalScene: boolean
   ) {
     this.isInTerminalScene = isInTerminalScene
     this.currentLevelScene = currentLevelScene
@@ -33,7 +38,7 @@ export class Player {
     this.update()
   }
 
-  makePlayer(x, y) {
+  makePlayer(x: number, y: number) {
     this.initialX = x
     this.initialY = y
     this.gameObj = add([
@@ -126,16 +131,16 @@ export class Player {
   }
 
   enableMobVunerability() {
-    function hitAndRespawn(context) {
+    const hitAndRespawn = () => {
       play("hit", { speed: 1.5 })
-      context.respawnPlayer()
+      this.respawnPlayer()
     }
-    this.gameObj.onCollide("fish", () => hitAndRespawn(this))
-    this.gameObj.onCollide("spiders", () => hitAndRespawn(this))
-    this.gameObj.onCollide("flames", () => hitAndRespawn(this))
-    this.gameObj.onCollide("axes", () => hitAndRespawn(this))
-    this.gameObj.onCollide("saws", () => hitAndRespawn(this))
-    this.gameObj.onCollide("birds", () => hitAndRespawn(this))
+    this.gameObj.onCollide("fish", () => hitAndRespawn())
+    this.gameObj.onCollide("spiders", () => hitAndRespawn())
+    this.gameObj.onCollide("flames", () => hitAndRespawn())
+    this.gameObj.onCollide("axes", () => hitAndRespawn())
+    this.gameObj.onCollide("saws", () => hitAndRespawn())
+    this.gameObj.onCollide("birds", () => hitAndRespawn())
   }
 
   update() {
@@ -175,17 +180,17 @@ export class Player {
     })
   }
 
-  updateLives(livesCountUI) {
+  updateLives(livesCountUI: GameObj) {
     onUpdate(() => {
       livesCountUI.text = `${this.lives}`
     })
   }
 
-  updateCoinCount(coinCountUI) {
+  updateCoinCount(coinCountUI: GameObj & { fullCoinCount: number }) {
     onUpdate(() => {
       coinCountUI.text = `${this.coins} / ${coinCountUI.fullCoinCount}`
       if (this.coins === coinCountUI.fullCoinCount) {
-        go(this.isInTerminalScene ? "end" : this.currentLevelScene + 1)
+        go(this.isInTerminalScene ? "end" : String(this.currentLevelScene + 1))
       }
     })
   }

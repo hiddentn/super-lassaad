@@ -1,8 +1,18 @@
+import type { GameObj, Vec2 } from "kaboom"
+
 export class Spiders {
   rangeX = 0
   rangeY = 800
+  amplitudes: number[]
+  velocities: number[]
+  spiders: GameObj[]
 
-  constructor(positions, amplitudes, velocities, type) {
+  constructor(
+    positions: Vec2[],
+    amplitudes: number[],
+    velocities: number[],
+    type: number
+  ) {
     this.amplitudes = amplitudes
     this.velocities = velocities
     this.spiders = []
@@ -26,8 +36,8 @@ export class Spiders {
     }
   }
 
-  async crawl(spider, moveBy, duration) {
-    if (spider.currAnim !== "crawl") spider.play("crawl")
+  async crawl(spider: GameObj, moveBy: number, duration: number) {
+    if (spider.curAnim() !== "crawl") spider.play("crawl")
 
     await tween(
       spider.pos.x,
@@ -40,24 +50,27 @@ export class Spiders {
 
   setMovementPattern() {
     for (const [index, spider] of this.spiders.entries()) {
-      const idle = spider.onStateEnter("idle", async (previousState) => {
-        if (spider.currAnim !== "idle") spider.play("idle")
+      const idle = spider.onStateEnter(
+        "idle",
+        async (previousState: string) => {
+          if (spider.curAnim() !== "idle") spider.play("idle")
 
-        await new Promise((resolve) => {
-          setTimeout(() => resolve(), 1000)
-        })
+          await new Promise((resolve) => {
+            setTimeout(() => resolve(undefined), 1000)
+          })
 
-        if (previousState === "crawl-left") {
-          spider.enterState("crawl-right")
-        } else {
-          spider.jump()
-          if (!spider.isOffScreen()) {
-            play("spider-attack", { volume: 0.6 })
+          if (previousState === "crawl-left") {
+            spider.enterState("crawl-right")
+          } else {
+            spider.jump()
+            if (!spider.isOffScreen()) {
+              play("spider-attack", { volume: 0.6 })
+            }
+
+            spider.enterState("crawl-left")
           }
-
-          spider.enterState("crawl-left")
         }
-      })
+      )
 
       const crawlLeft = spider.onStateEnter("crawl-left", async () => {
         spider.flipX = false

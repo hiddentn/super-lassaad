@@ -1,8 +1,8 @@
 export const load = {
-  fonts: () => {
+  fonts: (): void => {
     loadFont("Round", "/fonts/Round9x13.ttf")
   },
-  assets: () => {
+  assets: (): void => {
     // controls prompts
     loadSprite("up", "/images/Arrow_Up_Key_Dark.png")
     loadSprite("down", "/images/Arrow_Down_Key_Dark.png")
@@ -252,7 +252,7 @@ export const load = {
       },
     })
   },
-  sounds: () => {
+  sounds: (): void => {
     loadSound("jump", "/sounds/jump.wav")
     loadSound("coin", "/sounds/coin.wav")
     loadSound("water-ambience", "/sounds/water-ambience.mp3")

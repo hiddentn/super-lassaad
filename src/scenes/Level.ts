@@ -1,5 +1,10 @@
+import type { GameObj } from "kaboom"
+import type { TileMappings } from "./generateMappings"
+
 export class Level {
-  drawWaves(type, anim) {
+  map: GameObj[] = []
+
+  drawWaves(type: string, anim: string) {
     let offset = -100
     for (let i = 0; i < 21; i++) {
       add([sprite(type, { anim }), pos(offset, 600), scale(4), fixed()])
@@ -7,7 +12,7 @@ export class Level {
     }
   }
 
-  drawMapLayout(levelLayout, mappings) {
+  drawMapLayout(levelLayout: string[][], mappings: TileMappings) {
     const layerSettings = {
       tileWidth: 16,
       tileHeight: 12,
@@ -24,7 +29,7 @@ export class Level {
     }
   }
 
-  drawBackground(bgSpriteName) {
+  drawBackground(bgSpriteName: string) {
     add([sprite(bgSpriteName), fixed(), scale(4)])
   }
 }

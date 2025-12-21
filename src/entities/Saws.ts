@@ -1,5 +1,11 @@
+import type { GameObj, Vec2 } from "kaboom"
+
 export class Saws {
-  constructor(positions, ranges) {
+  positions: Vec2[]
+  ranges: number[]
+  saws: GameObj[]
+
+  constructor(positions: Vec2[], ranges: number[]) {
     this.positions = positions
     this.ranges = ranges
     this.saws = []
@@ -11,7 +17,7 @@ export class Saws {
           anchor("center"),
           pos(position),
           scale(4),
-          rotate(),
+          rotate(0),
           state("rotate-left", ["rotate-left", "rotate-right"]),
           offscreen(),
           "saws",

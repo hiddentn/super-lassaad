@@ -1,5 +1,10 @@
+import type { GameObj, Vec2 } from "kaboom"
+
 export class Birds {
-  constructor(positions, ranges, type) {
+  ranges: number[]
+  birds: GameObj[]
+
+  constructor(positions: Vec2[], ranges: number[], type: number) {
     this.ranges = ranges
     this.birds = []
     for (const position of positions) {
@@ -10,7 +15,7 @@ export class Birds {
           anchor("center"),
           pos(position),
           scale(4),
-          rotate(),
+          rotate(0),
           state("fly-left", [
             "fly-left",
             "fly-right",
@@ -24,7 +29,7 @@ export class Birds {
     }
   }
 
-  async fly(bird, moveBy, duration) {
+  async fly(bird: GameObj, moveBy: number, duration: number) {
     await tween(
       bird.pos.x,
       bird.pos.x + moveBy,
@@ -34,12 +39,12 @@ export class Birds {
     )
   }
 
-  async dive(bird, target, duration) {
+  async dive(bird: GameObj, target: Vec2, duration: number) {
     await tween(
       bird.pos,
       target,
       duration,
-      (pos) => (bird.pos = pos),
+      (p) => (bird.pos = p),
       easings.easeInSine
     )
   }

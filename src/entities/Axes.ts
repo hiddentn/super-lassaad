@@ -1,5 +1,11 @@
+import type { GameObj, Vec2 } from "kaboom"
+
 export class Axes {
-  constructor(positions, swingTimes) {
+  swingTimes: number[]
+  positions: Vec2[]
+  axes: GameObj[]
+
+  constructor(positions: Vec2[], swingTimes: number[]) {
     this.swingTimes = swingTimes
     this.positions = positions
     this.axes = []
@@ -15,7 +21,7 @@ export class Axes {
           scale(4),
           anchor(vec2(0, -0.75)),
           state("swing-left", ["swing-left", "swing-right"]),
-          rotate(),
+          rotate(0),
           offscreen(),
           "axes",
         ])
@@ -23,7 +29,7 @@ export class Axes {
     }
   }
 
-  async swing(axe, angle, swingTime) {
+  async swing(axe: GameObj, angle: number, swingTime: number) {
     if (!axe.isOffScreen()) play("swinging-axe")
 
     await tween(

@@ -1,5 +1,10 @@
+import type { GameObj, Vec2 } from "kaboom"
+
 export class Flames {
-  constructor(positions, amplitudes, type) {
+  amplitudes: number[]
+  flames: GameObj[]
+
+  constructor(positions: Vec2[], amplitudes: number[], type: number) {
     this.amplitudes = amplitudes
     this.flames = []
     for (const position of positions) {
@@ -10,7 +15,7 @@ export class Flames {
           anchor("center"),
           pos(position),
           scale(4),
-          rotate(),
+          rotate(0),
           state("launch", ["launch", "rotate", "fall"]),
           offscreen(),
           "flames",
@@ -33,7 +38,7 @@ export class Flames {
         flame.enterState("rotate", "fall")
       })
 
-      const rotate = flame.onStateEnter("rotate", (nextState) => {
+      const rotate = flame.onStateEnter("rotate", (nextState: string) => {
         flame.rotateBy(180)
         flame.enterState(nextState)
       })
