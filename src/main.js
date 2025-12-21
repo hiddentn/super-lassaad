@@ -1,4 +1,4 @@
-import kaboom from "./libs/kaboom.mjs"
+import kaboom from "kaboom"
 import { Player } from "./entities/Player.js"
 import { Fish } from "./entities/Fish.js"
 import { Flames } from "./entities/Flames.js"

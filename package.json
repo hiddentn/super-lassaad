@@ -1,20 +1,27 @@
 {
-  "name": "super-lassad",
+  "name": "super-lassaad",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src",
+    "format": "prettier --write src"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "kaboom": "^3000.1.17"
+  },
   "devDependencies": {
-    "prettier": "^2.8.8",
     "eslint": "^8.44.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-import": "^2.27.5"
+    "eslint-plugin-import": "^2.27.5",
+    "prettier": "^2.8.8",
+    "vite": "^7.3.0"
   }
 }
