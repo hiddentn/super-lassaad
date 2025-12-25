@@ -44,7 +44,6 @@ export function scene() {
   const camera = new Camera()
   camera.attach(player.gameObj, 0, -200, null, 200)
 
-  UIManager.addDarkBg()
   UIManager.displayLivesCount(player)
   UIManager.displayCoinCount(player)
 
