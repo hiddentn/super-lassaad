@@ -11,7 +11,7 @@ export class Level {
     for (let i = 0; i < numTiles; i++) {
       add([
         sprite(type, { anim }),
-        pos(offset, height() - 180),
+        pos(offset, height() - 150),
         scale(4),
         fixed(),
       ])

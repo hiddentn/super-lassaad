@@ -11,19 +11,24 @@ export function scene() {
     pos(center()),
   ])
   add([
-    text("Rbe7t M3ana Prime", { size: 35, font: "Round" }),
+    text("Rbe7t M3ana Prime", { size: 30, font: "Round" }),
     area(),
     anchor("center"),
     pos(vec2(center().x, center().y + 80)),
   ])
 
   displayBlinkingUIMessage(
-    "Press [ Enter ] to Play Again",
+    "Press [ Enter ] or Tap",
     vec2(center().x, center().y + 150)
   )
+  displayBlinkingUIMessage("to Play Again", vec2(center().x, center().y + 180))
 
-  onKeyPress("enter", () => {
+  const goToMenu = () => {
     play("confirm-ui")
     go("menu")
-  })
+  }
+
+  onKeyPress("enter", goToMenu)
+  onMousePress(goToMenu)
+  onTouchStart(goToMenu)
 }

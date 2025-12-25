@@ -6,7 +6,7 @@ export function scene() {
   add([rect(width(), height()), color(0, 0, 0)])
   add([
     text("Mafamech Salaire!", {
-      size: 40,
+      size: 35,
       font: "Round",
     }),
     area(),
@@ -24,12 +24,17 @@ export function scene() {
   ])
 
   displayBlinkingUIMessage(
-    "Press [ Enter ] to Start Game",
+    "Press [ Enter ] or Tap",
     vec2(center().x, center().y + 100)
   )
+  displayBlinkingUIMessage("to Start Game", vec2(center().x, center().y + 130))
 
-  onKeyPress("enter", () => {
+  const restartGame = () => {
     play("confirm-ui")
     go("1")
-  })
+  }
+
+  onKeyPress("enter", restartGame)
+  onMousePress(restartGame)
+  onTouchStart(restartGame)
 }

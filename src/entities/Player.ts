@@ -18,6 +18,16 @@ export class Player {
   timeSinceLastGrounded: number
   gameObj: GameObj
 
+  // Touch control state
+  isTouchingLeft = false
+  isTouchingRight = false
+  isSwipingDown = false
+  touchControlsEnabled = true
+  showTouchZones = false
+  activeTouches: Map<number, { x: number; y: number }> = new Map()
+  touchStartPositions: Map<number, { x: number; y: number }> = new Map()
+  swipeThreshold = 50 // Minimum distance for swipe detection
+
   constructor(
     posX: number,
     posY: number,
@@ -35,6 +45,7 @@ export class Player {
     this.lives = nbLives
     this.previousHeight = this.gameObj.pos.y
     this.setPlayerControls()
+    this.setTouchControls()
     this.update()
   }
 
@@ -58,7 +69,10 @@ export class Player {
         collision.preventResolution()
       }
 
-      if (collision.target.is("passthrough") && isKeyDown("down")) {
+      if (
+        collision.target.is("passthrough") &&
+        (isKeyDown("down") || this.isSwipingDown)
+      ) {
         collision.preventResolution()
       }
     })
@@ -118,6 +132,185 @@ export class Player {
     })
   }
 
+  setTouchControls() {
+    if (!this.touchControlsEnabled) return
+
+    // Handle touch start - store initial position for swipe detection
+    onTouchStart((touchPos, touch) => {
+      if (this.gameObj.paused) return
+      this.activeTouches.set(touch.identifier, { x: touchPos.x, y: touchPos.y })
+      this.touchStartPositions.set(touch.identifier, {
+        x: touchPos.x,
+        y: touchPos.y,
+      })
+      this.processTouches()
+    })
+
+    // Handle touch move - detect swipe up for jump, swipe down for passthrough
+    onTouchMove((touchPos, touch) => {
+      if (this.gameObj.paused) return
+      const startPos = this.touchStartPositions.get(touch.identifier)
+      if (startPos) {
+        const deltaY = startPos.y - touchPos.y
+        // Swipe up detected
+        if (deltaY > this.swipeThreshold) {
+          this.handleTouchJump()
+          // Reset start position to prevent multiple jumps from same swipe
+          this.touchStartPositions.set(touch.identifier, {
+            x: touchPos.x,
+            y: touchPos.y,
+          })
+        }
+        // Swipe down detected
+        else if (deltaY < -this.swipeThreshold) {
+          this.isSwipingDown = true
+          // Reset start position to prevent continuous triggering
+          this.touchStartPositions.set(touch.identifier, {
+            x: touchPos.x,
+            y: touchPos.y,
+          })
+        }
+      }
+      this.activeTouches.set(touch.identifier, { x: touchPos.x, y: touchPos.y })
+      this.processTouches()
+    })
+
+    // Handle touch end - clean up
+    onTouchEnd((_touchPos, touch) => {
+      this.activeTouches.delete(touch.identifier)
+      this.touchStartPositions.delete(touch.identifier)
+      // Reset swipe down state when touch ends
+      if (this.activeTouches.size === 0) {
+        this.isSwipingDown = false
+      }
+      this.processTouches()
+    })
+
+    // Fallback for mouse (desktop testing)
+    onMousePress(() => {
+      if (this.gameObj.paused) return
+      const mpos = mousePos()
+      this.activeTouches.set(-1, { x: mpos.x, y: mpos.y })
+      this.touchStartPositions.set(-1, { x: mpos.x, y: mpos.y })
+      this.processTouches()
+    })
+
+    onMouseMove(() => {
+      if (this.gameObj.paused) return
+      if (this.activeTouches.has(-1)) {
+        const mpos = mousePos()
+        const startPos = this.touchStartPositions.get(-1)
+        if (startPos) {
+          const deltaY = startPos.y - mpos.y
+          // Swipe up detected
+          if (deltaY > this.swipeThreshold) {
+            this.handleTouchJump()
+            // Reset start position to prevent multiple jumps from same swipe
+            this.touchStartPositions.set(-1, { x: mpos.x, y: mpos.y })
+          }
+          // Swipe down detected
+          else if (deltaY < -this.swipeThreshold) {
+            this.isSwipingDown = true
+            // Reset start position to prevent continuous triggering
+            this.touchStartPositions.set(-1, { x: mpos.x, y: mpos.y })
+          }
+        }
+        this.activeTouches.set(-1, { x: mpos.x, y: mpos.y })
+        this.processTouches()
+      }
+    })
+
+    onMouseRelease(() => {
+      this.activeTouches.delete(-1)
+      this.touchStartPositions.delete(-1)
+      this.isSwipingDown = false
+      this.processTouches()
+    })
+
+    // Create visual indicators if enabled
+    this.createTouchZoneIndicators()
+  }
+
+  processTouches() {
+    // Reset touch states
+    this.isTouchingLeft = false
+    this.isTouchingRight = false
+
+    const screenW = width()
+
+    // Process all active touches for left/right movement
+    for (const [, touchPos] of this.activeTouches) {
+      // Left third = move left
+      if (touchPos.x < screenW / 3) {
+        this.isTouchingLeft = true
+      }
+      // Right third = move right
+      else if (touchPos.x > (screenW * 2) / 3) {
+        this.isTouchingRight = true
+      }
+    }
+
+    // Reset movement animation when no touches
+    if (
+      this.activeTouches.size === 0 &&
+      !isKeyDown("left") &&
+      !isKeyDown("right")
+    ) {
+      this.isMoving = false
+    }
+  }
+
+  handleTouchJump() {
+    if (this.gameObj.paused || this.isRespawning) return
+
+    if (this.gameObj.isGrounded()) {
+      this.hasJumpedOnce = true
+      this.gameObj.jump(this.jumpForce)
+      play("jump")
+      return
+    }
+
+    // Coyote time support
+    if (
+      !this.gameObj.isGrounded() &&
+      time() - this.timeSinceLastGrounded < this.coyoteLapse &&
+      !this.hasJumpedOnce
+    ) {
+      this.hasJumpedOnce = true
+      this.gameObj.jump(this.jumpForce)
+      play("jump")
+    }
+  }
+
+  createTouchZoneIndicators() {
+    if (!this.showTouchZones) return
+
+    const screenW = width()
+    const screenH = height()
+
+    // Left zone indicator (full height)
+    add([
+      rect(screenW / 3, screenH),
+      pos(0, 0),
+      color(255, 255, 255),
+      opacity(0.1),
+      fixed(),
+      z(100),
+      "touch-zone-indicator",
+    ])
+
+    // Right zone indicator (full height)
+    add([
+      rect(screenW / 3, screenH),
+      pos((screenW * 2) / 3, 0),
+      color(255, 255, 255),
+      opacity(0.1),
+      fixed(),
+      z(100),
+      "touch-zone-indicator",
+    ])
+  }
+
   respawnPlayer() {
     if (this.lives > 0) {
       this.gameObj.pos = vec2(this.initialX, this.initialY)
@@ -152,6 +345,22 @@ export class Player {
 
       this.heightDelta = this.previousHeight - this.gameObj.pos.y
       this.previousHeight = this.gameObj.pos.y
+
+      // Handle touch-based continuous movement
+      if (this.touchControlsEnabled && !this.gameObj.paused) {
+        if (this.isTouchingLeft && !this.isRespawning) {
+          if (this.gameObj.curAnim() !== "run") this.gameObj.play("run")
+          this.gameObj.flipX = true
+          this.gameObj.move(-this.speed, 0)
+          this.isMoving = true
+        }
+        if (this.isTouchingRight && !this.isRespawning) {
+          if (this.gameObj.curAnim() !== "run") this.gameObj.play("run")
+          this.gameObj.flipX = false
+          this.gameObj.move(this.speed, 0)
+          this.isMoving = true
+        }
+      }
 
       if (!this.isMoving && this.gameObj.curAnim() !== "idle") {
         this.gameObj.play("idle")

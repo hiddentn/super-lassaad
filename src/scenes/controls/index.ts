@@ -3,13 +3,13 @@ import { displayBlinkingUIMessage } from "../../utils/ui"
 export function scene() {
   add([sprite("forest-background"), scale(width() / 320, height() / 180)])
   add([
-    text("Controls", { font: "Round", size: 50 }),
+    text("Controls", { font: "Round", size: 30 }),
     area(),
     anchor("center"),
     pos(center().x, center().y - 200),
   ])
 
-  const controlPrompts = add([pos(center().x + 30, center().y)])
+  const controlPrompts = add([pos(center().x + 10, center().y - 50)])
   controlPrompts.add([sprite("up"), pos(0, -80)])
   controlPrompts.add([sprite("down")])
   controlPrompts.add([sprite("left"), pos(-80, 0)])
@@ -22,12 +22,27 @@ export function scene() {
   controlPrompts.add([text("Move", { font: "Round", size: 32 }), pos(10, 100)])
 
   displayBlinkingUIMessage(
-    "Press [ Enter ] to Start Game",
-    vec2(center().x, center().y + 300)
+    "Tap Left or Right to Move",
+    vec2(center().x, center().y + 130)
   )
 
-  onKeyPress("enter", () => {
+  displayBlinkingUIMessage(
+    "Swipe Up to Jump",
+    vec2(center().x, center().y + 160)
+  )
+
+  displayBlinkingUIMessage(
+    "Press [ Enter ] or Tap",
+    vec2(center().x, center().y + 240)
+  )
+  displayBlinkingUIMessage("to Start Game", vec2(center().x, center().y + 270))
+
+  const startGame = () => {
     play("confirm-ui", { speed: 1.5 })
     go("1")
-  })
+  }
+
+  onKeyPress("enter", startGame)
+  onMousePress(startGame)
+  onTouchStart(startGame)
 }

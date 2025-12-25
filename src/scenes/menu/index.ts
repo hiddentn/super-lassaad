@@ -12,12 +12,17 @@ export function scene() {
   ])
 
   displayBlinkingUIMessage(
-    "Press [ Enter ] to Start Game",
+    "Press [ Enter ] or Tap",
     vec2(center().x, center().y + 100)
   )
+  displayBlinkingUIMessage("to Start Game", vec2(center().x, center().y + 130))
 
-  onKeyPress("enter", () => {
+  const startGame = () => {
     play("confirm-ui", { speed: 1.5 })
     go("controls")
-  })
+  }
+
+  onKeyPress("enter", startGame)
+  onMousePress(startGame)
+  onTouchStart(startGame)
 }

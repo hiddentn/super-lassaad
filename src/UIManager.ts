@@ -10,7 +10,7 @@ class UI {
     this.livesCountUI = add([
       text(`${player.lives}`, {
         font: "Round",
-        size: 50,
+        size: 35,
       }),
       fixed(),
       pos(70, 10),
@@ -28,7 +28,7 @@ class UI {
     this.coinCountUI = add([
       text(`${player.coins} / ${this.fullCoinCount}`, {
         font: "Round",
-        size: 50,
+        size: 35,
       }),
       {
         fullCoinCount: get("coin", { recursive: true }).length,
